@@ -21,7 +21,7 @@ class MyPlugin(Star):
         logger.info(message_chain)
         yield event.plain_result(f"Hello, {user_name}, 你发了 {message_str}!") # 发送一条纯文本消息
 
-    filter.command("test")
+    @filter.command("test")
     async def test(self, event: AstrMessageEvent):
         url = "http://backend:8080/image/test"
         res = requests.get(url=url)
