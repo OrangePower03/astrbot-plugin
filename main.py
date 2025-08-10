@@ -90,7 +90,8 @@ class MyPlugin(Star):
                     url = self.base_url + "/image/addPic"
                     body = {
                         "dict": dict,
-                        "url": image.url
+                        "url": image.url,
+                        "fileName": image.file
                     }
                     res = requests.post(url=url, json=body)
                     if res.text == "ok":
@@ -112,6 +113,7 @@ class MyPlugin(Star):
         dict = event.message_str.removeprefix("来只").strip()
         url = self.base_url + f"/image/getRandomPic/{dict}"
         res = requests.post(url=url, json={})
+        logger.info(f"接收到返回的链接或错误,返回值为{res.text}")
         if res.text.startswith("http"):
             yield event.image_result(res.text)
         else:
