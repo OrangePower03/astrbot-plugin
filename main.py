@@ -29,16 +29,17 @@ class MyPlugin(Star):
 
     @filter.command("test")
     async def test(self, event: AstrMessageEvent):
-        chain = event.get_messages()
-        yield event.plain_result(f"一共有{len(chain)}条数据链,数据是:{event.get_message_outline()}")
-        # for i in chain:
-        #     if isinstance(i, Plain):
+        pass
 
 
 
-    @filter.command("send_image")
-    async def send_image(self, event: AstrMessageEvent):
-        yield event.image_result("https://cq-note.oss-cn-hangzhou.aliyuncs.com/20250425232807.png")
+
+
+
+
+    # @filter.command("send_image")
+    # async def send_image(self, event: AstrMessageEvent):
+    #     yield event.image_result("https://cq-note.oss-cn-hangzhou.aliyuncs.com/20250425232807.png")
 
     @filter.command("添加词条")
     async def addDict(self, event: AstrMessageEvent):
@@ -52,13 +53,36 @@ class MyPlugin(Star):
 
     @filter.command("添加图片")
     async def addPic(self, event: AstrMessageEvent):
-        url = self.base_url + "/image/addPic"
-        # event.get_extra()
-        body = {
-            "dict": event.message_str.removeprefix("添加图片").strip()
-        }
-        res = requests.post(url=url, json=body)
-        yield event.plain_result(res.text)
+        chain = event.get_messages()
+        if len(chain) <= 1:
+            yield event.plain_result("请引用一张图片")
+        elif len(chain) > 2:
+            yield event.plain_result("消息太多了,只能引用图片再添加")
+        else:
+            if isinstance(chain[0], Reply):
+                url = self.base_url + "/image/addPic"
+                dict = event.message_str.removeprefix("添加图片").strip()
+                image = chain[0].message_str
+                if len(dict) == 0:
+                    yield event.plain_result("请在添加图片后加上你要添加到的词条,如 添加图片 可乐")
+                    return
+                body = {
+                    "dict": dict,
+                    "image": image
+                }
+                yield event.plain_result(f"词条{dict},引用消息{image}")
+                # res = requests.post(url=url, json=body)
+                # if res.text == "ok":
+                #     yield event.plain_result("添加成功")
+                # elif res.text == "词条不存在":
+                #     yield event.plain_result(f"词条{dict}不存在,请先添加词条")
+                # else:
+                #     yield event.plain_result("添加失败,服务器异常")
+                return
+            else:
+                yield event.plain_result("第一条数据必须是引用")
+                return
+
 
     async def terminate(self):
         """可选择实现异步的插件销毁方法，当插件被卸载/停用时会调用。"""
