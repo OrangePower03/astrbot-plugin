@@ -57,20 +57,25 @@ class MyPlugin(Star):
         if len(chain) <= 1:
             yield event.plain_result("请引用一张图片")
         elif len(chain) > 2:
-            yield event.plain_result("消息太多了,只能引用图片再添加")
+            yield event.plain_result("消息太多了,只能引用图片再输出文字添加")
         else:
             if isinstance(chain[0], Reply):
-                url = self.base_url + "/image/addPic"
-                dict = event.message_str.removeprefix("添加图片").strip()
-                image = chain[0].message_str
-                if len(dict) == 0:
-                    yield event.plain_result("请在添加图片后加上你要添加到的词条,如 添加图片 可乐")
-                    return
-                body = {
-                    "dict": dict,
-                    "image": image
-                }
-                yield event.plain_result(f"词条{dict},引用消息{image}")
+                chain_chain = chain[0].chain
+                if len(chain_chain) == 1 and isinstance(chain_chain[0], Image):
+                    dict = event.message_str.removeprefix("添加图片").strip()
+                    image: Image = chain_chain[0]
+                    if len(dict) == 0:
+                        yield event.plain_result("请在添加图片后加上你要添加到的词条,如 添加图片 可乐")
+                        return
+
+                    yield event.plain_result(f"词条:{dict},引用消息图片url:{image.url},图片file:{image.file},图片file_unique:{image.file_unique},图片path:{image.path}")
+                else:
+                    yield event.plain_result("引用数据太多或者引用数据不是图片")
+                # url = self.base_url + "/image/addPic"
+                # body = {
+                #     "dict": dict,
+                #     "image": image
+                # }
                 # res = requests.post(url=url, json=body)
                 # if res.text == "ok":
                 #     yield event.plain_result("添加成功")
@@ -78,7 +83,6 @@ class MyPlugin(Star):
                 #     yield event.plain_result(f"词条{dict}不存在,请先添加词条")
                 # else:
                 #     yield event.plain_result("添加失败,服务器异常")
-                return
             else:
                 yield event.plain_result("第一条数据必须是引用")
                 return
