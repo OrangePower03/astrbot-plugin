@@ -111,7 +111,7 @@ class MyPlugin(Star):
     async def send_image(self, event: AstrMessageEvent):
         dict = event.message_str.removeprefix("来只").strip()
         url = self.base_url + f"/image/getRandomPic/{dict}"
-        res = requests.post(url=url)
+        res = requests.post(url=url, json={})
         if res.text.startswith("http"):
             yield event.image_result(res.text)
         else:
