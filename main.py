@@ -50,9 +50,7 @@ class MyPlugin(Star):
         yield event.plain_result(res)
 
 
-
-
-
+### 图片
 
     @filter.command("添加词条")
     async def addDict(self, event: AstrMessageEvent):
@@ -97,6 +95,8 @@ class MyPlugin(Star):
                         yield event.plain_result(f"添加失败,服务器错误码:{res.text}")
 
                     # yield event.plain_result(f"词条:{dict},引用消息图片url:{image.url},图片file:{image.file},图片file_unique:{image.file_unique},图片path:{image.path}")
+                elif isinstance(chain_chain[0], At):
+                    logger.info(f"传来")
                 else:
                     yield event.plain_result("引用数据太多或者引用数据不是图片")
 
@@ -124,6 +124,15 @@ class MyPlugin(Star):
             return res.text
         logger.error(f"展示词条时服务器错误,错误码:{res.json()}")
         return "服务器错误"
+
+
+
+### 聊天记录知识库
+
+    @filter.command("test")
+    async def test(self, event: AstrMessageEvent):
+        event.plain_result(event.get_message_outline())
+
 
     async def terminate(self):
         """可选择实现异步的插件销毁方法，当插件被卸载/停用时会调用。"""
