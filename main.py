@@ -70,9 +70,8 @@ class MyPlugin(Star):
         chain = event.get_messages()
         if len(chain) <= 1:
             yield event.plain_result("请引用一张图片并在下面输出 /添加图片 [词条]")
-        elif len(chain) == 3 and isinstance(chain[1], At):
-            yield event.plain_result(event.message_str)
-        elif len(chain) > 2:
+        
+        elif len(chain) > 3 or len(chain) == 3 and not isinstance(chain[1], At):
             yield event.plain_result("消息太多了,请引用图片后再输出文字添加")
         else:
             if isinstance(chain[0], Reply):
