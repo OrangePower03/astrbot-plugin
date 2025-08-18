@@ -121,7 +121,7 @@ class MyPlugin(Star):
 
     ### 聊天记录知识库
     @filter.event_message_type(filter.EventMessageType.ALL)
-    async def test(self, event: AstrMessageEvent):
+    async def all_msg(self, event: AstrMessageEvent):
         logger.info("进入聊天记录拦截器")
         if event.message_str != "":
             yield event.plain_result(event.message_str)
