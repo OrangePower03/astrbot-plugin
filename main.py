@@ -69,7 +69,9 @@ class MyPlugin(Star):
     async def addPic(self, event: AstrMessageEvent):
         chain = event.get_messages()
         if len(chain) <= 1:
-            yield event.plain_result("请引用一张图片")
+            yield event.plain_result("请引用一张图片并在下面输出 /添加图片 [词条]")
+        elif len(chain) == 3 and isinstance(chain[1], At):
+            yield event.plain_result(event.message_str)
         elif len(chain) > 2:
             yield event.plain_result("消息太多了,请引用图片后再输出文字添加")
         else:
@@ -103,6 +105,9 @@ class MyPlugin(Star):
             else:
                 yield event.plain_result("第一条数据必须是引用")
                 return
+
+
+
 
 
     @filter.command("来只")
