@@ -120,10 +120,11 @@ class MyPlugin(Star):
 
 
     ### 聊天记录知识库
-    @filter.regex(".*")
+    @filter.event_message_type(filter.EventMessageType.ALL)
     async def test(self, event: AstrMessageEvent):
-        logger.info("调用正则表达式")
-        yield event.plain_result(event.get_message_outline())
+        logger.info("进入聊天记录拦截器")
+        if event.message_str != "":
+            yield event.plain_result(event.message_str)
 
     @filter.command("test")
     async def test(self, event: AstrMessageEvent):
