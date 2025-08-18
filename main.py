@@ -27,7 +27,6 @@ class MyPlugin(Star):
     #     logger.info(message_chain)
     #     yield event.plain_result(f"Hello, {user_name}, 你发了 {message_str}!")  # 发送一条纯文本消息
 
-
     @filter.command("说明书")
     async def specification(self, event: AstrMessageEvent):
         res = f"""
@@ -40,18 +39,13 @@ class MyPlugin(Star):
             /添加图片 [词条名]
             
             注意:不能引用除了图片以外的数据,引用别人引用的图片也不行
-                不能在引用图片后不能at人,否则添加失败,即不能
-                [引用图片]
-                @xxx /添加图片 [词条名]
-                
+            
             最后就可以获取随机一张图片了,执行以下指令
             /来只 [词条名]
         """
         yield event.plain_result(res)
 
-
-### 图片
-
+    ### 图片
     @filter.command("添加词条")
     async def addDict(self, event: AstrMessageEvent):
         url = self.base_url + "/image/addDict"
@@ -70,7 +64,7 @@ class MyPlugin(Star):
         chain = event.get_messages()
         if len(chain) <= 1:
             yield event.plain_result("请引用一张图片并在下面输出 /添加图片 [词条]")
-        
+
         elif len(chain) > 3 or len(chain) == 3 and not isinstance(chain[1], At):
             yield event.plain_result("消息太多了,请引用图片后再输出文字添加")
         else:
@@ -103,11 +97,6 @@ class MyPlugin(Star):
 
             else:
                 yield event.plain_result("第一条数据必须是引用")
-                return
-
-
-
-
 
     @filter.command("来只")
     async def send_image(self, event: AstrMessageEvent):
@@ -125,22 +114,21 @@ class MyPlugin(Star):
         url = self.base_url + f"/image/showDict"
         res = requests.post(url=url)
         if res.status_code == 200:
-            return res.text
+            yield event.plain_result(res.text)
         logger.error(f"展示词条时服务器错误,错误码:{res.json()}")
-        return "服务器错误"
+        yield event.plain_result("服务器错误")
 
 
-
-### 聊天记录知识库
+    ### 聊天记录知识库
+    @filter.regex(".*")
+    async def test(self, event: AstrMessageEvent):
+        logger.info("调用正则表达式")
+        yield event.plain_result(event.get_message_outline())
 
     @filter.command("test")
     async def test(self, event: AstrMessageEvent):
-        event.plain_result(event.get_message_outline())
-
+        yield event.plain_result(event.get_message_outline())
 
     async def terminate(self):
         """可选择实现异步的插件销毁方法，当插件被卸载/停用时会调用。"""
         pass
-
-
-
