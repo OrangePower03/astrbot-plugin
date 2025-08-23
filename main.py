@@ -4,6 +4,8 @@ from astrbot.api.event import filter, AstrMessageEvent, MessageEventResult
 from astrbot.api.star import Context, Star, register
 from astrbot.api import logger
 from astrbot.core.message.components import *
+from datetime import datetime
+import pytz
 
 
 @register("image", "Charlie", "一个简单的图片添加插件", "1.0.0")
@@ -122,9 +124,35 @@ class MyPlugin(Star):
     ### 聊天记录知识库
     @filter.event_message_type(filter.EventMessageType.ALL)
     async def all_msg(self, event: AstrMessageEvent):
-        logger.info("进入聊天记录拦截器")
-        if event.message_str != "":
-            yield event.plain_result(event.message_str)
+        if event.message_str.strip() != "":
+            tz = pytz.timezone('Asia/Shanghai')
+            now = datetime.now(tz)
+            formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
+            url = self.base_url + "/record/add"
+            body = {
+                "sendDate": formatted_time,
+                "sender": event.get_sender_name(),
+                "message": event.message_str
+            }
+            logger.info(body)
+            requests.post(url=url, json=body)
+            logger.info("聊天记录添加成功")
+
+    @filter.command("问")
+    async def ask(self, event: AstrMessageEvent):
+        tz = pytz.timezone('Asia/Shanghai')
+        now = datetime.now(tz)
+        formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
+        url = self.base_url + "/record/ask"
+        body = {
+            "sendDate": formatted_time,
+            "sender": event.get_sender_name(),
+            "message": event.message_str
+        }
+        logger.info(body)
+        res = requests.post(url=url, json=body)
+        yield event.plain_result(res.text)
+            
 
     @filter.command("test")
     async def test(self, event: AstrMessageEvent):
