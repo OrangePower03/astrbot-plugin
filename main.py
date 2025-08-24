@@ -125,9 +125,8 @@ class MyPlugin(Star):
     @filter.event_message_type(filter.EventMessageType.ALL)
     async def all_msg(self, event: AstrMessageEvent):
         message = event.message_str.strip()
-        if event.is_wake:
-            yield event.plain_result(event.get_message_outline())
-        if message != "" and not event.is_wake:
+        logger.info("消息:" + event.message_obj)
+        if message != "":
             tz = pytz.timezone('Asia/Shanghai')
             now = datetime.now(tz)
             formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -137,12 +136,13 @@ class MyPlugin(Star):
                 "sender": event.get_sender_name(),
                 "message": event.message_str
             }
-            logger.info(body)
+            logger.info(message)
             requests.post(url=url, json=body)
             logger.info("聊天记录添加成功")
 
     @filter.command("问")
     async def ask(self, event: AstrMessageEvent):
+        yield event.plain_result("正在调用ai,需要一定的时间,请不要重复询问")
         tz = pytz.timezone('Asia/Shanghai')
         now = datetime.now(tz)
         formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -152,7 +152,7 @@ class MyPlugin(Star):
             "sender": event.get_sender_name(),
             "message": event.message_str
         }
-        logger.info(body)
+        # logger.info(body)
         res = requests.post(url=url, json=body)
         yield event.plain_result(res.text)
             
