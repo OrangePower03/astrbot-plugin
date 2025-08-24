@@ -66,34 +66,55 @@ class MyPlugin(Star):
         chain = event.get_messages()
         if len(chain) <= 1:
             yield event.plain_result("请引用一张图片并在下面输出 /添加图片 [词条]")
-
-        elif len(chain) > 3 or len(chain) == 3 and not isinstance(chain[1], At):
-            yield event.plain_result("消息太多了,请引用图片后再输出文字添加")
+        # elif len(chain) > 3 or len(chain) == 3 and not isinstance(chain[1], At):
+        #     yield event.plain_result("消息太多了,请引用图片后再输出文字添加")
         else:
             if isinstance(chain[0], Reply):
                 chain_chain = chain[0].chain
-                if len(chain_chain) == 1 and isinstance(chain_chain[0], Image):
-                    dict = event.message_str.removeprefix("添加图片").strip()
-                    image: Image = chain_chain[0]
-                    if len(dict) == 0:
-                        yield event.plain_result("请在添加图片后加上你要添加到的词条,如 添加图片 可乐")
-                        return
 
-                    url = self.base_url + "/image/addPic"
-                    body = {
-                        "dict": dict,
-                        "url": image.url,
-                        "fileName": image.file
-                    }
-                    res = requests.post(url=url, json=body)
-                    if res.text == "ok":
-                        yield event.plain_result("添加成功")
-                    else:
-                        yield event.plain_result(f"添加失败,服务器错误码:{res.text}")
 
-                    # yield event.plain_result(f"词条:{dict},引用消息图片url:{image.url},图片file:{image.file},图片file_unique:{image.file_unique},图片path:{image.path}")
-                elif isinstance(chain_chain[0], At):
-                    logger.info(f"传来")
+                for c in chain_chain:
+                    if isinstance(c, Image):
+                        dict = event.message_str.removeprefix("添加图片").strip()
+                        image: Image = c
+                        if len(dict) == 0:
+                            yield event.plain_result("请在添加图片后加上你要添加到的词条,如 /添加图片 可乐")
+                            return
+                        logger.info(f"添加图片{dict}")
+                        url = self.base_url + "/image/addPic"
+                        body = {
+                            "dict": dict,
+                            "url": image.url,
+                            "fileName": image.file
+                        }
+                        res = requests.post(url=url, json=body)
+                        if res.text == "ok":
+                            yield event.plain_result("添加成功")
+                        else:
+                            yield event.plain_result(f"添加失败,服务器错误码:{res.text}")
+
+                # if len(chain_chain) == 1 and isinstance(chain_chain[0], Image):
+                #     dict = event.message_str.removeprefix("添加图片").strip()
+                #     image: Image = chain_chain[0]
+                #     if len(dict) == 0:
+                #         yield event.plain_result("请在添加图片后加上你要添加到的词条,如 添加图片 可乐")
+                #         return
+                #
+                #     url = self.base_url + "/image/addPic"
+                #     body = {
+                #         "dict": dict,
+                #         "url": image.url,
+                #         "fileName": image.file
+                #     }
+                #     res = requests.post(url=url, json=body)
+                #     if res.text == "ok":
+                #         yield event.plain_result("添加成功")
+                #     else:
+                #         yield event.plain_result(f"添加失败,服务器错误码:{res.text}")
+                #
+                #     # yield event.plain_result(f"词条:{dict},引用消息图片url:{image.url},图片file:{image.file},图片file_unique:{image.file_unique},图片path:{image.path}")
+                # elif isinstance(chain_chain[0], At):
+                #     logger.info(f"传来")
                 else:
                     yield event.plain_result("引用数据太多或者引用数据不是图片")
 
