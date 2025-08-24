@@ -122,7 +122,7 @@ class MyPlugin(Star):
 
 
     ### 聊天记录知识库
-    @filter.event_message_type(filter.EventMessageType.ALL)
+    @filter.event_message_type(filter.EventMessageType.OTHER_MESSAGE)
     async def all_msg(self, event: AstrMessageEvent):
         message = event.message_str.strip()
         if message != "" and not message.startswith("/"):
