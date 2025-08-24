@@ -125,9 +125,8 @@ class MyPlugin(Star):
     @filter.event_message_type(filter.EventMessageType.ALL)
     async def all_msg(self, event: AstrMessageEvent):
         message = event.message_str.strip()
-        logger.info("消息:" + event.get_message_outline())
         if event.get_message_outline().count("/") != 0:
-            yield event.plain_result("指令语句,不做记录")
+            logger.info(f"{event.get_message_outline()}:为指令语句,不做记录")
             return 
         if message != "":
             tz = pytz.timezone('Asia/Shanghai')
