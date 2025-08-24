@@ -125,6 +125,8 @@ class MyPlugin(Star):
     @filter.event_message_type(filter.EventMessageType.ALL)
     async def all_msg(self, event: AstrMessageEvent):
         message = event.message_str.strip()
+        if event.is_wake:
+            yield event.plain_result(event.get_message_outline())
         if message != "" and not event.is_wake:
             tz = pytz.timezone('Asia/Shanghai')
             now = datetime.now(tz)
@@ -157,7 +159,8 @@ class MyPlugin(Star):
 
     @filter.command("test")
     async def test(self, event: AstrMessageEvent):
-        yield event.plain_result(event.get_message_outline())
+        if event.is_wake:
+            yield event.plain_result(event.get_message_outline())
 
     async def terminate(self):
         """可选择实现异步的插件销毁方法，当插件被卸载/停用时会调用。"""
