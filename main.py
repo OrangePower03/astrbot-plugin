@@ -40,7 +40,7 @@ class MyPlugin(Star):
             [引用图片]
             /添加图片 [词条名]
             
-            注意:不能引用除了图片以外的数据,引用别人引用的图片也不行
+            注意:必须先引用了才能输入添加图片指令
             
             最后就可以获取随机一张图片了,执行以下指令
             /来只 [词条名]
@@ -66,12 +66,9 @@ class MyPlugin(Star):
         chain = event.get_messages()
         if len(chain) <= 1:
             yield event.plain_result("请引用一张图片并在下面输出 /添加图片 [词条]")
-        # elif len(chain) > 3 or len(chain) == 3 and not isinstance(chain[1], At):
-        #     yield event.plain_result("消息太多了,请引用图片后再输出文字添加")
         else:
             if isinstance(chain[0], Reply):
-                chain_chain = chain[0].chain
-
+                chain_chain: [BaseMessageComponent] = chain[0].chain
 
                 for c in chain_chain:
                     if isinstance(c, Image):
@@ -92,32 +89,6 @@ class MyPlugin(Star):
                             yield event.plain_result("添加成功")
                         else:
                             yield event.plain_result(f"添加失败,服务器错误码:{res.text}")
-
-                # if len(chain_chain) == 1 and isinstance(chain_chain[0], Image):
-                #     dict = event.message_str.removeprefix("添加图片").strip()
-                #     image: Image = chain_chain[0]
-                #     if len(dict) == 0:
-                #         yield event.plain_result("请在添加图片后加上你要添加到的词条,如 添加图片 可乐")
-                #         return
-                #
-                #     url = self.base_url + "/image/addPic"
-                #     body = {
-                #         "dict": dict,
-                #         "url": image.url,
-                #         "fileName": image.file
-                #     }
-                #     res = requests.post(url=url, json=body)
-                #     if res.text == "ok":
-                #         yield event.plain_result("添加成功")
-                #     else:
-                #         yield event.plain_result(f"添加失败,服务器错误码:{res.text}")
-                #
-                #     # yield event.plain_result(f"词条:{dict},引用消息图片url:{image.url},图片file:{image.file},图片file_unique:{image.file_unique},图片path:{image.path}")
-                # elif isinstance(chain_chain[0], At):
-                #     logger.info(f"传来")
-                else:
-                    yield event.plain_result("引用数据太多或者引用数据不是图片")
-
             else:
                 yield event.plain_result("第一条数据必须是引用")
 
@@ -141,14 +112,13 @@ class MyPlugin(Star):
         logger.error(f"展示词条时服务器错误,错误码:{res.json()}")
         yield event.plain_result("服务器错误")
 
-
     ### 聊天记录知识库
     @filter.event_message_type(filter.EventMessageType.ALL)
     async def all_msg(self, event: AstrMessageEvent):
         message = event.message_str.strip()
         if event.get_message_outline().count("/") != 0:
             logger.info(f"{event.get_message_outline()}:为指令语句,不做记录")
-            return 
+            return
         if message != "":
             tz = pytz.timezone('Asia/Shanghai')
             now = datetime.now(tz)
@@ -178,7 +148,6 @@ class MyPlugin(Star):
         # logger.info(body)
         res = requests.post(url=url, json=body)
         yield event.plain_result(res.text)
-            
 
     @filter.command("test")
     async def test(self, event: AstrMessageEvent):
