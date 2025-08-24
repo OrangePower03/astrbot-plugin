@@ -122,10 +122,10 @@ class MyPlugin(Star):
 
 
     ### 聊天记录知识库
-    @filter.event_message_type(filter.EventMessageType.OTHER_MESSAGE)
+    @filter.event_message_type(filter.EventMessageType.ALL)
     async def all_msg(self, event: AstrMessageEvent):
         message = event.message_str.strip()
-        if message != "" and not message.startswith("/"):
+        if message != "" and not event.is_wake:
             tz = pytz.timezone('Asia/Shanghai')
             now = datetime.now(tz)
             formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
