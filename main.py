@@ -113,7 +113,7 @@ class MyPlugin(Star):
         yield event.plain_result("服务器错误")
 
     ### 聊天记录知识库
-    @filter.event_message_type(filter.EventMessageType.ALL)
+    @filter.event_message_type(filter.EventMessageType.GROUP_MESSAGE)
     async def all_msg(self, event: AstrMessageEvent):
         message = event.message_str.strip()
         if event.get_message_outline().count("/") != 0:
@@ -127,9 +127,11 @@ class MyPlugin(Star):
             body = {
                 "sendDate": formatted_time,
                 "sender": event.get_sender_name(),
-                "message": event.message_str
+                "message": event.message_str,
+                # "groupId": event.get_group_id()
             }
-            logger.info(message)
+            # event.get_group()
+            yield event.plain_result(f"群id:{event.get_group_id()}")
             requests.post(url=url, json=body)
             logger.info("聊天记录添加成功")
 
