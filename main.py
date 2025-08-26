@@ -119,7 +119,10 @@ class MyPlugin(Star):
         if event.get_message_outline().count("/") != 0:
             logger.info(f"{event.get_message_outline()}:为指令语句,不做记录")
             return
-        if message != "" and "317832838" == event.get_group_id():
+        if message != "":
+            if "317832838" != event.get_group_id():
+                logger.info("不是岛群,仅做测试用")
+                return 
             tz = pytz.timezone('Asia/Shanghai')
             now = datetime.now(tz)
             formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
