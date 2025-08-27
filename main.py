@@ -122,14 +122,14 @@ class MyPlugin(Star):
         if message != "":
             if "317832838" != event.get_group_id():
                 logger.info("不是岛群,仅做测试用")
-                return 
+                return
             tz = pytz.timezone('Asia/Shanghai')
             now = datetime.now(tz)
             formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
             url = self.base_url + "/record/add"
             body = {
                 "sendDate": formatted_time,
-                "sender": event.get_sender_name(),
+                "sender": event.get_sender_id(),
                 "message": event.message_str,
                 # "groupId": event.get_group_id()
             }
