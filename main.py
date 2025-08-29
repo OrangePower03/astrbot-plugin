@@ -100,6 +100,7 @@ class MyPlugin(Star):
         logger.info(f"接收到返回的链接或错误,返回值为{res.text}")
         if res.text.startswith("http"):
             yield event.image_result(res.text)
+            return
         else:
             yield event.plain_result(f"出现错误,错误信息:{res.text}")
 
