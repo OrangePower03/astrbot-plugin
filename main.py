@@ -147,7 +147,7 @@ class MyPlugin(Star):
         url = self.base_url + "/record/ask"
         body = {
             "sendDate": formatted_time,
-            "sender": event.get_sender_name(),
+            "sender": event.get_sender_id(),
             "message": event.message_str
         }
         # logger.info(body)
