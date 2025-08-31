@@ -9,7 +9,6 @@ from astrbot.core.message.components import *
 from datetime import datetime
 import pytz
 
-from TestPlugin import TestPlugin
 
 
 @register("image", "Charlie", "一个简单的图片添加插件", "1.0.0")
@@ -250,6 +249,4 @@ question_specification = """
 解释：将机器人输出引用并输出指令 /1 就好，非常方便
 """
 
-if __name__ == '__main__':
-    TestPlugin
-
+__all__ = ['TestPlugin']
