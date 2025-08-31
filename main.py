@@ -184,7 +184,7 @@ class QuestionPlugin(Star):
 
 
 @register("common", "Charlie", "一个公共插件，用于讲解和测试使用", "1.0.0")
-class CommonPlugin(TestPlugin):
+class CommonPlugin(Star):
 
     @filter.command("test")
     async def test(self, event: AstrMessageEvent):
@@ -209,8 +209,7 @@ class CommonPlugin(TestPlugin):
 
     def __init__(self, context: Context):
         super().__init__(context)
-        TestPlugin.__init__(self, context)
-
+        TestPlugin(context)
         self.specification = """
         /说明书 [指令功能]
         指令功能: 图片/聊天记录/题库
