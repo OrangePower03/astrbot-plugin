@@ -186,7 +186,7 @@ class MyPlugin(Star):
                         "answer": data["答案"],
                         "source": data["答案来源"]
                     }
-                    if data["source"] == "题库":
+                    if body["source"] == "题库":
                         yield event.plain_result("题库中已存在，无需添加")
                         return
                     url = self.base_url + "/question/add"
