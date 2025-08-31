@@ -4,14 +4,9 @@ import json
 if __name__ == '__main__':
     json_str = """
     {
-        name": "test",
-        "version": "1.0.0",
-        "description": "test plugin"
+        "答案": "test",
+        "答案来源": "1.0.0",
+        "问题": "test plugin"
     }
     """
-    ts = ["111", "222"]
-    for t in ts:
-        print(t)
-        # break
-    else:
-        print("no match")
+    print(json.loads(json_str))

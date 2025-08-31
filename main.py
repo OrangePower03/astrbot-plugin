@@ -157,10 +157,11 @@ class MyPlugin(Star):
     ### 题库
     @filter.command("题库")
     async def ask_question_library(self, event: AstrMessageEvent):
-        question = event.get_message_str()
+        question = event.get_message_str().removeprefix("题库").strip()
         if len(question) == 0:
             yield event.plain_result("请输入题目")
             return
+        yield event.plain_result("正在调用题库，ai需要深度思考，请耐心等待，一分钟内不响应再重新问")
         url = self.base_url + f"/question/ask/{question}"
         res = requests.post(url=url)
         yield event.plain_result(res.text)
@@ -170,9 +171,18 @@ class MyPlugin(Star):
         messages: [BaseMessageComponent] = event.get_messages()
         for message in messages:
             if isinstance(message, Reply):
+                logger.info(message.message_str)
                 ai_res = message.message_str
                 try:
-                    body: dict = json.loads(ai_res)
+                    data: dict = json.loads(ai_res)
+                    body = {
+                        "question": data["问题"],
+                        "answer": data["答案"],
+                        "source": data["答案来源"]
+                    }
+                    if data["source"] == "题库":
+                        yield event.plain_result("题库中已存在，无需添加")
+                        return
                     url = self.base_url + "/question/add"
                     res = requests.post(url=url, json=body)
                     if res.ok:
