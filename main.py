@@ -207,6 +207,7 @@ class CommonPlugin(Star):
 
     def __init__(self, context: Context):
         super().__init__(context)
+        
         self.specification = """
         /说明书 [指令功能]
         指令功能: 图片/聊天记录/题库
