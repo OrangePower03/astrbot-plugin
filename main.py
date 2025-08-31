@@ -9,6 +9,8 @@ from astrbot.core.message.components import *
 from datetime import datetime
 import pytz
 
+from .test import TestPlugin
+
 
 @register("image", "Charlie", "一个简单的图片添加插件", "1.0.0")
 class ImagePlugin(Star):
@@ -182,7 +184,7 @@ class QuestionPlugin(Star):
 
 
 @register("common", "Charlie", "一个公共插件，用于讲解和测试使用", "1.0.0")
-class CommonPlugin(Star):
+class CommonPlugin(TestPlugin):
 
     @filter.command("test")
     async def test(self, event: AstrMessageEvent):
@@ -207,6 +209,7 @@ class CommonPlugin(Star):
 
     def __init__(self, context: Context):
         super().__init__(context)
+        TestPlugin.__init__(self, context)
 
         self.specification = """
         /说明书 [指令功能]
@@ -267,5 +270,3 @@ class CommonPlugin(Star):
     async def terminate(self):
         """可选择实现异步的插件销毁方法，当插件被卸载/停用时会调用。"""
         pass
-
-
