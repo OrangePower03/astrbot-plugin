@@ -1,3 +1,5 @@
+import json
+
 import requests
 
 from astrbot.api.event import filter, AstrMessageEvent, MessageEventResult
@@ -132,9 +134,7 @@ class MyPlugin(Star):
                 "sendDate": formatted_time,
                 "sender": event.get_sender_id(),
                 "message": event.message_str,
-                # "groupId": event.get_group_id()
             }
-            # event.get_group()
             requests.post(url=url, json=body)
             logger.info("聊天记录添加成功")
 
@@ -153,6 +153,37 @@ class MyPlugin(Star):
         # logger.info(body)
         res = requests.post(url=url, json=body)
         yield event.plain_result(res.text)
+
+    ### 题库
+    @filter.command("题库")
+    async def ask_question_library(self, event: AstrMessageEvent):
+        question = event.get_message_str()
+        if len(question) == 0:
+            yield event.plain_result("请输入题目")
+            return
+        url = self.base_url + f"/question/ask/{question}"
+        res = requests.post(url=url)
+        yield event.plain_result(res.text)
+
+    @filter.command("1")
+    async def add_question(self, event: AstrMessageEvent):
+        messages: [BaseMessageComponent] = event.get_messages()
+        for message in messages:
+            if isinstance(message, Reply):
+                ai_res = message.message_str
+                try:
+                    body: dict = json.loads(ai_res)
+                    url = self.base_url + "/question/add"
+                    res = requests.post(url=url, json=body)
+                    if res.ok:
+                        yield event.plain_result("成功添加")
+                except json.JSONDecodeError as e:
+                    yield event.plain_result("你引用的内容格式不正确，叫可乐来修")
+                    logger.error(e.msg)
+                break
+
+        else:
+            yield event.plain_result("请引用了题目才能成功添加")
 
     @filter.command("test")
     async def test(self, event: AstrMessageEvent):
