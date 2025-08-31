@@ -9,15 +9,12 @@ from astrbot.core.message.components import *
 from datetime import datetime
 import pytz
 
-from TestPlugin import TestPlugin
-
 
 @register("image", "Charlie", "一个简单的图片添加插件", "1.0.0")
 class MyPlugin(Star):
 
     def __init__(self, context: Context):
         super().__init__(context)
-        test = TestPlugin
         self.base_url = "http://backend:8080"
 
     async def initialize(self):
@@ -197,6 +194,14 @@ class MyPlugin(Star):
     async def terminate(self):
         """可选择实现异步的插件销毁方法，当插件被卸载/停用时会调用。"""
         pass
+
+
+@register("test", "Charlie", "一个简单的测试插件", "1.0.0")
+class TestPlugin(Star):
+    @filter.command("test")
+    async def test(self, event: AstrMessageEvent):
+        if event.is_wake:
+            yield event.plain_result(event.get_message_outline())
 
 
 specification = """
