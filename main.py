@@ -9,8 +9,6 @@ from astrbot.core.message.components import *
 from datetime import datetime
 import pytz
 
-from .test import TestPlugin
-
 
 @register("image", "Charlie", "一个简单的图片添加插件", "1.0.0")
 class ImagePlugin(Star):
@@ -209,7 +207,6 @@ class CommonPlugin(Star):
 
     def __init__(self, context: Context):
         super().__init__(context)
-        TestPlugin(super().context)
         self.specification = """
         /说明书 [指令功能]
         指令功能: 图片/聊天记录/题库
