@@ -248,5 +248,3 @@ question_specification = """
 
 解释：将机器人输出引用并输出指令 /1 就好，非常方便
 """
-
-__all__ = ['TestPlugin']
