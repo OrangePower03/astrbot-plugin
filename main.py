@@ -207,6 +207,7 @@ class CommonPlugin(Star):
 
     def __init__(self, context: Context):
         super().__init__(context)
+        self.base_url = "http://backend:8080/common"
 
         self.specification = """
         /说明书 [指令功能]
