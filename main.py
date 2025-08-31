@@ -26,10 +26,7 @@ class MyPlugin(Star):
         param = event.get_message_str().removeprefix("说明书").strip()
         res: str
         if len(param) == 0:
-            res = """
-                /说明书 [指令功能]
-                指令功能: 图片;聊天记录;题库
-            """
+            res = specification
         elif param == "图片":
             res = pic_specification
         elif param == "聊天记录":
@@ -37,7 +34,7 @@ class MyPlugin(Star):
         elif param == "题库":
             res = "暂未开放功能点，等待答题活动开启"
         else:
-            res = "指令功能不存在"
+            res = "指令功能不存在\n" + specification
         yield event.plain_result(res)
 
     ### 图片
@@ -201,6 +198,11 @@ class MyPlugin(Star):
         """可选择实现异步的插件销毁方法，当插件被卸载/停用时会调用。"""
         pass
 
+
+specification = """
+/说明书 [指令功能]
+指令功能: 图片/聊天记录/题库
+"""
 
 pic_specification = """
 首先如果不存在词条,需要先执行以下指令
