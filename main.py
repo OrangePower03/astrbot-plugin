@@ -1,4 +1,4 @@
-import json
+import re
 
 import requests
 
@@ -171,8 +171,14 @@ class MyPlugin(Star):
         messages: [BaseMessageComponent] = event.get_messages()
         for message in messages:
             if isinstance(message, Reply):
-                logger.info(message.message_str)
-                ai_res = message.message_str
+                logger.info(f"引用输出的消息内容：{message.message_str}")
+                pattern = r'\{("答案":"[^"]*","答案来源":"[^"]*","问题":"[^"]*")\}'
+                match = re.search(pattern, message.message_str)
+                if not match:
+                    yield event.plain_result("你引用的内容格式不正确，叫可乐来修")
+                    logger.error("正则无法匹配出指定的字符")
+                    return
+                ai_res = "{" + match.group(1) + "}"
                 try:
                     data: dict = json.loads(ai_res)
                     body = {
