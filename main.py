@@ -9,7 +9,7 @@ from astrbot.core.message.components import *
 from datetime import datetime
 import pytz
 
-import TestPlugin
+from TestPlugin import TestPlugin
 
 
 @register("image", "Charlie", "一个简单的图片添加插件", "1.0.0")
@@ -253,4 +253,3 @@ question_specification = """
 if __name__ == '__main__':
     TestPlugin
 
-    

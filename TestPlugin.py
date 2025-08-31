@@ -4,7 +4,7 @@ from astrbot.api import logger
 from astrbot.core.message.components import *
 
 
-@register("test", "Charlie", "一个简单的图片添加插件", "1.0.0")
+@register("test", "Charlie", "一个简单的测试插件", "1.0.0")
 class TestPlugin(Star):
     @filter.command("test")
     async def test(self, event: AstrMessageEvent):
