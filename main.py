@@ -9,6 +9,7 @@ from astrbot.core.message.components import *
 from datetime import datetime
 import pytz
 
+from TestPlugin import TestPlugin
 
 
 @register("image", "Charlie", "一个简单的图片添加插件", "1.0.0")
@@ -16,6 +17,7 @@ class MyPlugin(Star):
 
     def __init__(self, context: Context):
         super().__init__(context)
+        test = TestPlugin
         self.base_url = "http://backend:8080"
 
     async def initialize(self):
