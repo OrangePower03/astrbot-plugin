@@ -21,32 +21,23 @@ class MyPlugin(Star):
         """可选择实现异步的插件初始化方法，当实例化该插件类之后会自动调用该方法。"""
         pass
 
-    # 注册指令的装饰器。指令名为 helloworld。注册成功后，发送 `/helloworld` 就会触发这个指令，并回复 `你好, {user_name}!`
-    # @filter.command("helloworld")
-    # async def helloworld(self, event: AstrMessageEvent):
-    #     """这是一个 hello world 指令"""  # 这是 handler 的描述，将会被解析方便用户了解插件内容。建议填写。
-    #     user_name = event.get_sender_name()
-    #     message_str = event.message_str  # 用户发的纯文本消息字符串
-    #     message_chain = event.get_messages()  # 用户所发的消息的消息链 # from astrbot.api.message_components import *
-    #     logger.info(message_chain)
-    #     yield event.plain_result(f"Hello, {user_name}, 你发了 {message_str}!")  # 发送一条纯文本消息
-
     @filter.command("说明书")
     async def specification(self, event: AstrMessageEvent):
-        res = f"""
-            首先如果不存在词条,需要先执行以下指令
-            /添加词条 [词条名]
-            注意:词条名前必须有空格隔开
-            
-            然后就可以添加图片了,执行以下指令
-            [引用图片]
-            /添加图片 [词条名]
-            
-            注意:必须先引用了才能输入添加图片指令
-            
-            最后就可以获取随机一张图片了,执行以下指令
-            /来只 [词条名]
-        """
+        param = event.get_message_str().removeprefix("说明书").strip()
+        res: str
+        if len(param) == 0:
+            res = """
+                /说明书 [指令功能]
+                指令功能: 图片;聊天记录;题库
+            """
+        elif param == "图片":
+            res = pic_specification
+        elif param == "聊天记录":
+            res = record_specification
+        elif param == "题库":
+            res = "暂未开放功能点，等待答题活动开启"
+        else:
+            res = "指令功能不存在"
         yield event.plain_result(res)
 
     ### 图片
@@ -161,7 +152,7 @@ class MyPlugin(Star):
         if len(question) == 0:
             yield event.plain_result("请输入题目")
             return
-        yield event.plain_result("正在调用题库，ai需要深度思考，请耐心等待，一分钟内不响应再重新问")
+        yield event.plain_result("正在调用，ai需要深度思考，请耐心等待，一分钟内不响应再重新问")
         url = self.base_url + f"/question/ask/{question}"
         res = requests.post(url=url)
         yield event.plain_result(res.text)
@@ -209,3 +200,51 @@ class MyPlugin(Star):
     async def terminate(self):
         """可选择实现异步的插件销毁方法，当插件被卸载/停用时会调用。"""
         pass
+
+
+pic_specification = """
+首先如果不存在词条,需要先执行以下指令
+/添加词条 [词条名]
+注意:词条名前必须有空格隔开
+
+然后就可以添加图片了,执行以下指令
+[引用图片]
+/添加图片 [词条名]
+
+注意:必须先引用了才能输入添加图片指令
+
+最后就可以获取随机一张图片了,执行以下指令
+/来只 [词条名]
+"""
+
+record_specification = """
+聊天记录默认是会自动收取所有文本内容
+消息发出后会自动将聊天内容、QQ号传输给到数据库里存者
+
+当你需要找聊天记录或者想问一些问题时，可以调用指令
+/问 [问题]
+问题不能为空，然后就会先去查找数据库，查完再上下找几条记录
+一块传给ai，最后调用ai返回
+主要用途是查一些聊天记录，杜绝拿来攻击群友
+"""
+
+question_specification = """
+这个功能是专门用于游戏中答题活动提高各位答题率而准备的
+题库中存储了以往的题目，不止止是ai
+你描述的问题越详细，ai总结到题库后输出的越准确
+如果你输出的不够详细，可能会导致题库中存在多个类似的题目
+最后ai会返回最相近的所有答案，以分号分割开，根据题目选项选择
+
+具体用法：
+/题库 [问题]
+
+解释：问题不能为空，最后会输出三个东西
+{"问题": "", "答案": "", "答案来源": ""}
+注意，如果答案来源是AI且答对了的，代表题库中并不存在这个题目
+麻烦各位调用下面的指令来追加这个题目
+
+[引用机器人返回的内容]
+/1
+
+解释：将机器人输出引用并输出指令 /1 就好，非常方便
+"""
