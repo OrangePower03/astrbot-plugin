@@ -170,11 +170,12 @@ class MyPlugin(Star):
     async def t(self, event: AstrMessageEvent, param: str):
         logger.info(param)
         chain = []
-        if param == '1':
-            chain.append(Comp.At(qq=event.get_sender_id()))
-        elif param == 'all':
+        if param == 'all':
             chain.append(Comp.AtAll())
-            chain.append(Comp.Plain("今天是小推车的最后一天，注意兑换奖励"))
+            chain.append(Comp.Plain(" 今天是小推车的最后一天，注意兑换奖励"))
+        else:
+            chain.append(Comp.At(qq=param))
+
         yield event.chain_result(chain)
 
     # ============================================================== #
