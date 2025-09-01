@@ -8,34 +8,11 @@ from astrbot.api import logger
 from astrbot.core.message.components import *
 from datetime import datetime
 import pytz
+import astrbot.api.message_components as Comp
 
 
 @register("image", "Charlie", "一个简单的图片添加插件", "1.0.0")
 class MyPlugin(Star):
-
-    def __init__(self, context: Context):
-        super().__init__(context)
-        self.base_url = "http://backend:8080"
-
-    async def initialize(self):
-        """可选择实现异步的插件初始化方法，当实例化该插件类之后会自动调用该方法。"""
-        pass
-
-    @filter.command("说明书")
-    async def specification(self, event: AstrMessageEvent):
-        param = event.get_message_str().removeprefix("说明书").strip()
-        res: str
-        if len(param) == 0:
-            res = specification
-        elif param == "图片":
-            res = pic_specification
-        elif param == "聊天记录":
-            res = record_specification
-        elif param == "题库":
-            res = "暂未开放功能点，等待答题活动开启"
-        else:
-            res = "指令功能不存在\n" + specification
-        yield event.plain_result(res)
 
     ### 图片
     @filter.command("添加词条")
@@ -188,6 +165,40 @@ class MyPlugin(Star):
 
         else:
             yield event.plain_result("请引用了题目才能成功添加")
+
+    @filter.command("t")
+    async def t(self, event: AstrMessageEvent, param: str):
+        logger.info(param)
+        if param == '1':
+            Comp.At(qq=event.get_sender_id())
+        elif param == 'all':
+            Comp.AtAll()
+
+    # ============================================================== #
+    def __init__(self, context: Context):
+        super().__init__(context)
+        self.base_url = "http://backend:8080"
+
+    async def initialize(self):
+        """可选择实现异步的插件初始化方法，当实例化该插件类之后会自动调用该方法。"""
+        pass
+
+    @filter.command("说明书")
+    async def specification(self, event: AstrMessageEvent):
+        param = event.get_message_str().removeprefix("说明书").strip()
+        res: str
+        if len(param) == 0:
+            res = specification
+        elif param == "图片":
+            res = pic_specification
+        elif param == "聊天记录":
+            res = record_specification
+        elif param == "题库":
+            # res = question_specification
+            res = "暂未开放功能点，等待答题活动开启"
+        else:
+            res = "指令功能不存在\n" + specification
+        yield event.plain_result(res)
 
     @filter.command("test")
     async def test(self, event: AstrMessageEvent):
