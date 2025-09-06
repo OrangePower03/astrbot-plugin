@@ -198,7 +198,7 @@ class MyPlugin(Star):
                         chain.append(comp.Plain(text=text))
                         await event.send(MessageChain(chain=chain))
 
-        asyncio.run(websocket_listen_backend())
+        asyncio.create_task(websocket_listen_backend())
 
     async def initialize(self):
         """可选择实现异步的插件初始化方法，当实例化该插件类之后会自动调用该方法。"""
