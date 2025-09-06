@@ -1,4 +1,6 @@
-# https://github.com/OrangePower03/astrbot-plugin
+"""
+https://github.com/OrangePower03/astrbot-plugin
+"""
 
 import asyncio
 import time
