@@ -1,14 +1,16 @@
 import re
-
 import requests
+import pytz
+import websockets
+import asyncio
 
 from astrbot.api.event import filter, AstrMessageEvent, MessageEventResult
 from astrbot.api.star import Context, Star, register
 from astrbot.api import logger
 from astrbot.core.message.components import *
 from datetime import datetime
-import pytz
-import astrbot.api.message_components as Comp
+import astrbot.api.message_components as comp
+from astrbot.core.message.message_event_result import MessageChain
 
 
 @register("image", "Charlie", "一个简单的图片添加插件", "1.0.0")
@@ -83,12 +85,15 @@ class MyPlugin(Star):
     ### 聊天记录知识库
     @filter.event_message_type(filter.EventMessageType.GROUP_MESSAGE)
     async def all_msg(self, event: AstrMessageEvent):
+        group_id = event.get_group_id()
+        if self.events[group_id] is None:
+            self.events[group_id] = event
         message = event.message_str.strip()
         if event.get_message_outline().count("/") != 0:
             logger.info(f"{event.get_message_outline()}:为指令语句,不做记录")
             return
         if message != "":
-            if "317832838" != event.get_group_id():
+            if self.ddd_group_id != event.get_group_id():
                 logger.info("不是岛群,仅做测试用")
                 return
             tz = pytz.timezone('Asia/Shanghai')
@@ -166,22 +171,34 @@ class MyPlugin(Star):
         else:
             yield event.plain_result("请引用了题目才能成功添加")
 
-    @filter.command("t")
-    async def t(self, event: AstrMessageEvent, param: str):
-        logger.info(param)
-        chain = []
-        if param == 'all':
-            chain.append(Comp.AtAll())
-            chain.append(Comp.Plain(" 今天是小推车的最后一天，注意兑换奖励"))
-        else:
-            chain.append(Comp.At(qq=param))
-
-        yield event.chain_result(chain)
-
     # ============================================================== #
     def __init__(self, context: Context):
         super().__init__(context)
         self.base_url = "http://backend:8080"
+        self.events: dict[str, AstrMessageEvent] = {}
+        self.ddd_group_id = "317832838"
+
+        # 监听后端返回的数据，然后实时输出到Q群
+        async def websocket_listen_backend():
+            while True:
+                async with websockets.connect("ws://backend:8080/bot") as ws:
+                    response = await ws.recv()
+                    data: dict = json.loads(response)
+                    group_id: str = data["groupId"]
+                    text: str = "\n" + data["text"]
+                    qq: [str] = data["qq"]
+                    event: AstrMessageEvent = self.events[group_id]
+                    if event is None:
+                        logger.error("使用websocket发送消息时找不到群聊对应的消息中介")
+                    else:
+                        chain = []
+                        if qq is not None:
+                            for i in qq:
+                                chain.append(comp.At(qq=i))
+                        chain.append(comp.Plain(text=text))
+                        await event.send(MessageChain(chain=chain))
+
+        asyncio.run(websocket_listen_backend())
 
     async def initialize(self):
         """可选择实现异步的插件初始化方法，当实例化该插件类之后会自动调用该方法。"""
