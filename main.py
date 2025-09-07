@@ -177,12 +177,28 @@ class MyPlugin(Star):
         self.base_url = "http://backend:8080"
         self.events: dict[str, AstrMessageEvent] = {}
         self.ddd_group_id = "317832838"
+        self.is_connected = False
+
+        async def connect():
+            ws_url = "ws://backend:8080/bot"
+            while True:
+                try:
+                    logger.info(f"尝试连接 WebSocket: {ws_url}")
+                    self.websocket = await websockets.connect(ws_url)
+                    self.is_connected = True
+                    logger.info("WebSocket连接成功")
+                    return self.websocket
+                except Exception as e:
+                    logger.error(f"连接失败: {e}, 3秒后重试...")
+                    self.is_connected = False
+                    await asyncio.sleep(3)
 
         # 监听后端返回的数据，然后实时输出到Q群
-        async def websocket_listen_backend():
+        async def websocket_auto_connect_listen():
             while True:
-                async with websockets.connect("ws://backend:8080/bot") as ws:
+                async with connect() as ws:
                     response = await ws.recv()
+
                     data: dict = json.loads(response)
                     group_id: str = data["groupId"]
                     text: str = "\n" + data["text"]
@@ -198,7 +214,7 @@ class MyPlugin(Star):
                         chain.append(comp.Plain(text=text))
                         await event.send(MessageChain(chain=chain))
 
-        asyncio.create_task(websocket_listen_backend())
+        asyncio.create_task(websocket_auto_connect_listen())
 
     async def initialize(self):
         """可选择实现异步的插件初始化方法，当实例化该插件类之后会自动调用该方法。"""
