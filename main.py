@@ -177,7 +177,7 @@ class MyPlugin(Star):
         self.base_url = "http://backend:8080"
         self.events: dict[str, AstrMessageEvent] = {}
         self.ddd_group_id = "317832838"
-        self.is_connected = False
+        self.websocket: websockets = None
 
         async def connect():
             ws_url = "ws://backend:8080/bot"
@@ -185,12 +185,10 @@ class MyPlugin(Star):
                 try:
                     logger.info(f"尝试连接 WebSocket: {ws_url}")
                     self.websocket = await websockets.connect(ws_url)
-                    self.is_connected = True
                     logger.info("WebSocket连接成功")
                     return self.websocket
                 except Exception as e:
                     logger.error(f"连接失败: {e}, 3秒后重试...")
-                    self.is_connected = False
                     await asyncio.sleep(3)
 
         # 监听后端返回的数据，然后实时输出到Q群
