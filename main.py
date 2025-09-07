@@ -86,7 +86,7 @@ class MyPlugin(Star):
     @filter.event_message_type(filter.EventMessageType.GROUP_MESSAGE)
     async def all_msg(self, event: AstrMessageEvent):
         group_id = event.get_group_id()
-        if self.events[group_id] is None:
+        if self.events.get(group_id) is None:
             self.events[group_id] = event
         message = event.message_str.strip()
         if event.get_message_outline().count("/") != 0:
@@ -205,7 +205,7 @@ class MyPlugin(Star):
                     group_id: str = data["groupId"]
                     text: str = "\n" + data["text"]
                     qq: [str] = data["qq"]
-                    event: AstrMessageEvent = self.events[group_id]
+                    event: AstrMessageEvent = self.events.get(group_id)
                     if event is None:
                         logger.error("使用websocket发送消息时找不到群聊对应的消息中介")
                     else:
