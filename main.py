@@ -183,7 +183,6 @@ class MyPlugin(Star):
             target=self.task,
             # args=(interval_seconds, task_name),
             name=f"Scheduler-task",
-            daemon=True  # 设置为守护线程，主程序退出时自动结束
         ).start()
 
     def task(self):

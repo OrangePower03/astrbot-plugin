@@ -50,5 +50,5 @@ class TimedTask:
 
 
 if __name__ == '__main__':
-    TimedTask("http://localhost:8081", {})
-    time.sleep(1000)
+    d = {}
+    print(d.get("a"))
