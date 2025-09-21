@@ -184,6 +184,7 @@ class MyPlugin(Star):
             # args=(interval_seconds, task_name),
             name=f"Scheduler-task",
         ).start()
+        time.sleep(5)
 
     def task(self):
         logger.info("后台监视消息线程启动")
