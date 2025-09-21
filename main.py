@@ -186,6 +186,7 @@ class MyPlugin(Star):
         ).start()
 
     def task(self):
+        logger.info("后台监视消息线程启动")
         while True:
             time.sleep(self.interval)
             res = requests.post(url=self.base_url + "/task/get")
