@@ -1,8 +1,9 @@
 import re
+import threading
+import time
+
 import requests
 import pytz
-import websockets
-import asyncio
 
 from astrbot.api.event import filter, AstrMessageEvent, MessageEventResult
 from astrbot.api.star import Context, Star, register
@@ -177,46 +178,35 @@ class MyPlugin(Star):
         self.base_url = "http://backend:8080"
         self.events: dict[str, AstrMessageEvent] = {}
         self.ddd_group_id = "317832838"
+        self.interval = 60
+        threading.Thread(
+            target=self.task,
+            # args=(interval_seconds, task_name),
+            name=f"Scheduler-task",
+            daemon=True  # 设置为守护线程，主程序退出时自动结束
+        ).start()
 
-        async def connect():
-            ws_url = "ws://backend:8080/bot"
-            while True:
-                try:
-                    logger.info(f"尝试连接 WebSocket: {ws_url}")
-                    websocket = await websockets.connect(ws_url)
-                    logger.info("WebSocket连接成功")
-                    return websocket
-                except Exception as e:
-                    logger.error(f"连接失败: {e}, 3秒后重试...")
-                    await asyncio.sleep(3)
-
-        async def recv(ws: websockets):
-            if ws is None:
-                async with connect() as _ws:
-                    return _ws.recv()
-
-        # 监听后端返回的数据，然后实时输出到Q群
-        async def websocket_auto_connect_listen():
-            while True:
-                async with connect() as ws:
-                    response = await recv(ws)
-
-                    data: dict = json.loads(response)
-                    group_id: str = data["groupId"]
-                    text: str = "\n" + data["text"]
-                    qq: [str] = data["qq"]
+    def task(self):
+        while True:
+            time.sleep(self.interval)
+            res = requests.post(url=self.base_url + "/task/get")
+            if res.ok:
+                body = res.text
+                if "pass" != body:
+                    d: dict = json.loads(body)
+                    qq: [str] = d.get("qq")
+                    group_id: str = d["groupId"]
+                    text = d["text"]
                     event: AstrMessageEvent = self.events.get(group_id)
                     if event is None:
-                        logger.error("使用websocket发送消息时找不到群聊对应的消息中介")
+                        logger.error("发送消息时找不到群聊对应的消息中介")
                     else:
                         chain = []
                         if qq is not None:
                             for i in qq:
                                 chain.append(comp.At(qq=i))
                         chain.append(comp.Plain(text=text))
-                        await event.send(MessageChain(chain=chain))
-
-        asyncio.create_task(websocket_auto_connect_listen())
+                        yield event.send(MessageChain(chain=chain))
 
     async def initialize(self):
         """可选择实现异步的插件初始化方法，当实例化该插件类之后会自动调用该方法。"""
