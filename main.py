@@ -179,17 +179,14 @@ class MyPlugin(Star):
         self.events: dict[str, AstrMessageEvent] = {}
         self.ddd_group_id = "317832838"
         self.interval = 60
-        threading.Thread(
-            target=self.task,
-            # args=(interval_seconds, task_name),
-            name=f"Scheduler-task",
-        ).start()
-        time.sleep(5)
+        self.scheduler_task = asyncio.create_task(self.task())
 
-    def task(self):
+    async def task(self):
         logger.info("后台监视消息线程启动")
         while True:
-            time.sleep(self.interval)
+            logger.info("执行定时任务获取定时任务通知")
+            # time.sleep(self.interval)
+            await asyncio.sleep(self.interval)
             res = requests.post(url=self.base_url + "/task/get")
             if res.ok:
                 body = res.text
@@ -207,7 +204,7 @@ class MyPlugin(Star):
                             for i in qq:
                                 chain.append(comp.At(qq=i))
                         chain.append(comp.Plain(text=text))
-                        yield event.send(MessageChain(chain=chain))
+                        await event.send(MessageChain(chain=chain))
 
     async def initialize(self):
         """可选择实现异步的插件初始化方法，当实例化该插件类之后会自动调用该方法。"""
@@ -236,8 +233,12 @@ class MyPlugin(Star):
             yield event.plain_result(event.get_message_outline())
 
     async def terminate(self):
-        """可选择实现异步的插件销毁方法，当插件被卸载/停用时会调用。"""
-        pass
+        if hasattr(self, "scheduler_task"):
+            self.scheduler_task.cancel()
+            try:
+                await self.scheduler_task
+            except asyncio.CancelledError:
+                logger.debug("调度器任务已成功取消")
 
 
 specification = """
