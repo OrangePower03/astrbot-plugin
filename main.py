@@ -86,9 +86,7 @@ class MyPlugin(Star):
     ### 聊天记录知识库
     @filter.event_message_type(filter.EventMessageType.GROUP_MESSAGE)
     async def all_msg(self, event: AstrMessageEvent):
-        group_id = event.get_group_id()
-        if self.events.get(group_id) is None:
-            self.events[group_id] = event
+        self.events[event.get_group_id()] = event
         message = event.message_str.strip()
         if event.get_message_outline().count("/") != 0:
             logger.info(f"{event.get_message_outline()}:为指令语句,不做记录")
