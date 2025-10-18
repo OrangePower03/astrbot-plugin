@@ -190,12 +190,13 @@ class MyPlugin(Star):
                 res = requests.post(url=self.base_url + "/task/get")
                 if res.ok:
                     body = res.text
+                    logger.info(f"获取到了定时任务通知，通知数据:{body}")
                     if "pass" != body:
                         d: dict = json.loads(body)
                         qq: [str] = d.get("qq")
                         group_id: str = d["groupId"]
                         text = d["text"]
-                        logger.info(f"获取到了定时任务通知，通知数据:{body}")
+                        logger.info(f"需要at的人:{qq}, 群聊:{group_id}, 发送内容:{text}")
                         event: AstrMessageEvent = self.events.get(group_id)
                         if event is None:
                             logger.info("发送消息时找不到群聊对应的消息中介")
@@ -206,12 +207,10 @@ class MyPlugin(Star):
                                     chain.append(comp.At(qq=i))
                             chain.append(comp.Plain(text=text))
                             await event.send(MessageChain(chain=chain))
-                    else:
-                        logger.info("没有获取到定时任务通知")
                 else:
-                    logger.info("获取定时任务通知失败")
+                    logger.error("获取定时任务通知失败")
             except Exception as e:
-                logger.info("定时任务执行失败，出现了点异常")
+                logger.error(f"定时任务执行失败，出现了点异常, {e}")
 
     async def initialize(self):
         """可选择实现异步的插件初始化方法，当实例化该插件类之后会自动调用该方法。"""
