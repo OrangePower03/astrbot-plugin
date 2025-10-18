@@ -177,6 +177,7 @@ class MyPlugin(Star):
         self.events: dict[str, AstrMessageEvent] = {}
         self.ddd_group_id = "317832838"
         self.interval = 60
+        self.task_status = True
         self.scheduler_task = asyncio.create_task(self.task())
 
     async def task(self):
@@ -204,7 +205,10 @@ class MyPlugin(Star):
                                 for i in qq:
                                     chain.append(comp.At(qq=i))
                             chain.append(comp.Plain(text=text))
-                            await event.send(MessageChain(chain=chain))
+                            if self.task_status:
+                                await event.send(MessageChain(chain=chain))
+                            else:
+                                logger.info("定时任务未开启，不发送消息")
                 else:
                     logger.error("获取定时任务通知失败")
             except Exception as e:
@@ -230,6 +234,16 @@ class MyPlugin(Star):
         else:
             res = "指令功能不存在\n" + specification
         yield event.plain_result(res)
+
+    @filter.command("task")
+    async def task_status_control(self, event: AstrMessageEvent, status: str):
+        if status == "on":
+            self.task_status = True
+        elif status == "off":
+            self.task_status = False
+        else:
+            yield event.plain_result("指令格式错误")
+        yield event.plain_result("定时任务状态已修改")
 
     @filter.command("test")
     async def test(self, event: AstrMessageEvent):
