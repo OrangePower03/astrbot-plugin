@@ -184,27 +184,30 @@ class MyPlugin(Star):
     async def task(self):
         logger.info("后台监视消息线程启动")
         while True:
-            logger.info("执行定时任务获取定时任务通知")
-            # time.sleep(self.interval)
-            await asyncio.sleep(self.interval)
-            res = requests.post(url=self.base_url + "/task/get")
-            if res.ok:
-                body = res.text
-                if "pass" != body:
-                    d: dict = json.loads(body)
-                    qq: [str] = d.get("qq")
-                    group_id: str = d["groupId"]
-                    text = d["text"]
-                    event: AstrMessageEvent = self.events.get(group_id)
-                    if event is None:
-                        logger.error("发送消息时找不到群聊对应的消息中介")
-                    else:
-                        chain = []
-                        if qq is not None:
-                            for i in qq:
-                                chain.append(comp.At(qq=i))
-                        chain.append(comp.Plain(text=text))
-                        await event.send(MessageChain(chain=chain))
+            try:
+                logger.info("执行定时任务获取定时任务通知")
+                # time.sleep(self.interval)
+                await asyncio.sleep(self.interval)
+                res = requests.post(url=self.base_url + "/task/get")
+                if res.ok:
+                    body = res.text
+                    if "pass" != body:
+                        d: dict = json.loads(body)
+                        qq: [str] = d.get("qq")
+                        group_id: str = d["groupId"]
+                        text = d["text"]
+                        event: AstrMessageEvent = self.events.get(group_id)
+                        if event is None:
+                            logger.error("发送消息时找不到群聊对应的消息中介")
+                        else:
+                            chain = []
+                            if qq is not None:
+                                for i in qq:
+                                    chain.append(comp.At(qq=i))
+                            chain.append(comp.Plain(text=text))
+                            await event.send(MessageChain(chain=chain))
+            except Exception as e:
+                logger.error("定时任务执行失败，出现了点异常")
 
     async def initialize(self):
         """可选择实现异步的插件初始化方法，当实例化该插件类之后会自动调用该方法。"""
