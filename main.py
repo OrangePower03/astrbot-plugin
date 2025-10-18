@@ -240,7 +240,7 @@ class MyPlugin(Star):
                 for i in qq:
                     chain.append(comp.At(qq=i))
             chain.append(comp.Plain("111"))
-            await event.send(MessageChain(chain=chain))
+            yield event.chain_result(chain)
 
     async def terminate(self):
         if hasattr(self, "scheduler_task"):
