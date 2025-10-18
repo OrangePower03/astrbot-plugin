@@ -234,7 +234,13 @@ class MyPlugin(Star):
     @filter.command("test")
     async def test(self, event: AstrMessageEvent):
         if event.is_wake:
-            yield event.plain_result(event.get_message_outline())
+            chain = []
+            qq = ["all"]
+            if qq is not None:
+                for i in qq:
+                    chain.append(comp.At(qq=i))
+            chain.append(comp.Plain("111"))
+            await event.send(MessageChain(chain=chain))
 
     async def terminate(self):
         if hasattr(self, "scheduler_task"):
