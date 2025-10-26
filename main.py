@@ -184,7 +184,7 @@ class MyPlugin(Star):
         logger.info("后台监视消息线程启动")
         while True:
             try:
-                await asyncio.sleep(self.interval)
+                time.sleep(self.interval)
                 logger.info("执行定时任务获取定时任务通知")
                 res = requests.post(url=self.base_url + "/task/get")
                 if res.ok:
