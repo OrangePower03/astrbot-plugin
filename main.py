@@ -2,7 +2,6 @@ import re
 
 
 import requests
-import pytz
 
 from astrbot.api.event import filter, AstrMessageEvent, MessageEventResult
 from astrbot.api.star import Context, Star, register
@@ -94,8 +93,7 @@ class MyPlugin(Star):
             if self.ddd_group_id != event.get_group_id():
                 logger.info("不是岛群,仅做测试用")
                 return
-            tz = pytz.timezone('Asia/Shanghai')
-            now = datetime.now(tz)
+            now = datetime.now()
             formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
             url = self.base_url + "/record/add"
             body = {
@@ -109,8 +107,7 @@ class MyPlugin(Star):
     @filter.command("问")
     async def ask(self, event: AstrMessageEvent):
         yield event.plain_result("正在调用ai,需要一定的时间,请耐心等待")
-        tz = pytz.timezone('Asia/Shanghai')
-        now = datetime.now(tz)
+        now = datetime.now()
         formatted_time = now.strftime("%Y-%m-%d %H:%M:%S")
         url = self.base_url + "/record/ask"
         body = {
