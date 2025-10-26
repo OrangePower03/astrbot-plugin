@@ -249,9 +249,10 @@ class MyPlugin(Star):
         yield event.plain_result("定时任务状态已修改")
 
     @filter.command("test")
-    async def test(self, event: AstrMessageEvent, *qq):
+    async def test(self, event: AstrMessageEvent, q):
         if event.is_wake:
             chain = []
+            qq = [q]
             if qq is not None:
                 if "all" in qq:
                     chain.append(comp.AtAll())
