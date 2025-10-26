@@ -1,5 +1,2 @@
-pytz
 json==2.0.9
 re==2.2.1
-requests~=2.32.4
-astrbot~=3.5.24
