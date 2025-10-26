@@ -265,10 +265,7 @@ class MyPlugin(Star):
             if qq is not None:
                 if "all" in qq:
                     chain.append(comp.AtAll())
-                else:
-                    for i in qq:
-                        chain.append(comp.AtAll())
-            chain.append(comp.Plain("111"))
+            chain.append(comp.Plain(" 111"))
             e = self.events.get(event.get_group_id())
             yield e.chain_result(chain)
 
