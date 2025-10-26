@@ -1,5 +1,5 @@
 import re
-
+import time
 
 import requests
 
@@ -182,7 +182,8 @@ class MyPlugin(Star):
         logger.info("后台监视消息线程启动")
         while True:
             try:
-                await asyncio.sleep(self.interval)
+                # await asyncio.sleep(self.interval)
+                time.sleep(self.interval)
                 res = requests.post(url=self.base_url + "/task/get")
                 if res.ok:
                     body = res.text
