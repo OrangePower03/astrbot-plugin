@@ -249,7 +249,7 @@ class MyPlugin(Star):
     async def test(self, event: AstrMessageEvent):
         if event.is_wake:
             chain = []
-            qq = ["all"]
+            qq = ["1697081049"]
             if qq is not None:
                 for i in qq:
                     chain.append(comp.At(qq=i))
