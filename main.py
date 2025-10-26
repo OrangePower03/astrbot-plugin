@@ -235,14 +235,24 @@ class MyPlugin(Star):
         yield event.plain_result(res)
 
     @filter.command("task")
-    async def task_status_control(self, event: AstrMessageEvent, status: str):
-        if status == "on":
+    async def task_status_control(self, event: AstrMessageEvent, command: str):
+        if event.get_sender_id() != "1697081049":
+            yield event.plain_result("滚一边去，别瞎配置")
+            return
+
+        if command == "on":
             self.task_status = True
-        elif status == "off":
+            yield event.plain_result("定时任务状态已修改，当前状态为开启")
+        elif command == "off":
             self.task_status = False
+            yield event.plain_result("定时任务状态已修改，当前状态为关闭")
+        elif command == "status":
+            status = "开启" if self.task_status else "关闭"
+            yield event.plain_result(f"定时任务当前状态为{status}")
+        elif command == "groups":
+            yield event.plain_result(f"当前定时任务群组列表\n{','.join(self.events.keys())}")
         else:
             yield event.plain_result("指令格式错误")
-        yield event.plain_result("定时任务状态已修改")
 
     @filter.command("test")
     async def test(self, event: AstrMessageEvent, q):
