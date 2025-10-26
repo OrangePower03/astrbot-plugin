@@ -252,7 +252,7 @@ class MyPlugin(Star):
             qq = ["1697081049"]
             if qq is not None:
                 for i in qq:
-                    chain.append(comp.At(qq=i))
+                    chain.append(comp.AtAll())
             chain.append(comp.Plain("111"))
             e = self.events.get(event.get_group_id())
             yield e.chain_result(chain)
