@@ -202,8 +202,11 @@ class MyPlugin(Star):
                         else:
                             chain = []
                             if qq is not None:
-                                for i in qq:
-                                    chain.append(comp.At(qq=i))
+                                if "all" in qq:
+                                    chain.append(comp.AtAll())
+                                else:
+                                    for i in qq:
+                                        chain.append(comp.At(qq=i))
                             chain.append(comp.Plain(text=text))
                             if self.task_status:
                                 await event.send(MessageChain(chain=chain))
@@ -246,13 +249,15 @@ class MyPlugin(Star):
         yield event.plain_result("定时任务状态已修改")
 
     @filter.command("test")
-    async def test(self, event: AstrMessageEvent):
+    async def test(self, event: AstrMessageEvent, *qq):
         if event.is_wake:
             chain = []
-            qq = ["1697081049"]
             if qq is not None:
-                for i in qq:
+                if "all" in qq:
                     chain.append(comp.AtAll())
+                else:
+                    for i in qq:
+                        chain.append(comp.AtAll())
             chain.append(comp.Plain("111"))
             e = self.events.get(event.get_group_id())
             yield e.chain_result(chain)

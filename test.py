@@ -50,5 +50,5 @@ class TimedTask:
 
 
 if __name__ == '__main__':
-    d = {}
-    print(d.get("a"))
+    qq = ["all", "123455"]
+    print("all" in qq)
