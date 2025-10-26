@@ -181,7 +181,6 @@ class MyPlugin(Star):
         while True:
             try:
                 await asyncio.sleep(self.interval)
-                logger.info("执行定时任务获取定时任务通知")
                 res = requests.post(url=self.base_url + "/task/get")
                 if res.ok:
                     body = res.text
@@ -191,7 +190,6 @@ class MyPlugin(Star):
                         qq: [str] = d.get("qq")
                         group_id: str = d["groupId"]
                         text = d["text"]
-                        logger.info(f"需要at的人:{qq}, 群聊:{group_id}, 发送内容:{text}")
                         event: AstrMessageEvent = self.events.get(group_id)
                         if event is None:
                             logger.info("发送消息时找不到群聊对应的消息中介")
@@ -251,6 +249,9 @@ class MyPlugin(Star):
             yield event.plain_result(f"定时任务当前状态为{status}")
         elif command == "groups":
             yield event.plain_result(f"当前定时任务群组列表\n{','.join(self.events.keys())}")
+        elif command == "clear":
+            self.events.clear()
+            yield event.plain_result("定时任务群组列表已清空")
         else:
             yield event.plain_result("指令格式错误")
 
