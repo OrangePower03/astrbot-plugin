@@ -258,10 +258,10 @@ class MyPlugin(Star):
             yield event.plain_result("指令格式错误")
 
     @filter.command("test")
-    async def test(self, event: AstrMessageEvent, q):
+    async def test(self, event: AstrMessageEvent):
         if event.is_wake:
             chain = []
-            qq = [q]
+            qq = ["all"]
             if qq is not None:
                 if "all" in qq:
                     chain.append(comp.AtAll())
