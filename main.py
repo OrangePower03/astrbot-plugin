@@ -228,8 +228,8 @@ class MyPlugin(Star):
         elif param == "聊天记录":
             res = record_specification
         elif param == "题库":
-            # res = question_specification
-            res = "暂未开放功能点，等待答题活动开启"
+            res = question_specification
+            # res = "暂未开放功能点，等待答题活动开启"
         else:
             res = "指令功能不存在\n" + specification
         yield event.plain_result(res)
