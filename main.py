@@ -134,8 +134,8 @@ class MyPlugin(Star):
         yield event.plain_result(res.text)
 
     @filter.command("题")
-    async def ask_question_library(self, event: AstrMessageEvent):
-        question = event.get_message_str().removeprefix("题库").strip()
+    async def ask_question_no_library(self, event: AstrMessageEvent):
+        question = event.get_message_str().removeprefix("题").strip()
         if len(question) == 0:
             yield event.plain_result("请输入题目")
             return
