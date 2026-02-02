@@ -129,7 +129,7 @@ class MyPlugin(Star):
             yield event.plain_result("请输入题目")
             return
         yield event.plain_result("正在调用，ai需要深度思考，请耐心等待，一分钟内不响应再重新问")
-        url = self.base_url + f"/question/ask/{question}"
+        url = self.base_url + f"/question/ask/{question}/true"
         res = requests.post(url=url)
         yield event.plain_result(res.text)
 
@@ -139,8 +139,8 @@ class MyPlugin(Star):
         if len(question) == 0:
             yield event.plain_result("请输入题目")
             return
-        yield event.plain_result("正在调用，ai需要深度思考，请耐心等待，一分钟内不响应再重新问")
-        url = self.base_url + f"/question/ask/{question}"
+        # yield event.plain_result("正在调用，ai需要深度思考，请耐心等待，一分钟内不响应再重新问")
+        url = self.base_url + f"/question/ask/{question}/false"
         res = requests.post(url=url)
         yield event.plain_result(res.text)
 
