@@ -133,6 +133,17 @@ class MyPlugin(Star):
         res = requests.post(url=url)
         yield event.plain_result(res.text)
 
+    @filter.command("题")
+    async def ask_question_library(self, event: AstrMessageEvent):
+        question = event.get_message_str().removeprefix("题库").strip()
+        if len(question) == 0:
+            yield event.plain_result("请输入题目")
+            return
+        yield event.plain_result("正在调用，ai需要深度思考，请耐心等待，一分钟内不响应再重新问")
+        url = self.base_url + f"/question/ask/{question}"
+        res = requests.post(url=url)
+        yield event.plain_result(res.text)
+
     @filter.command("1")
     async def add_question(self, event: AstrMessageEvent):
         messages: [BaseMessageComponent] = event.get_messages()
@@ -317,10 +328,12 @@ question_specification = """
 最后ai会返回最相近的所有答案，以分号分割开，根据题目选项选择
 
 具体用法：
+/题 [问题]
 /题库 [问题]
 
 解释：问题不能为空，最后会输出三个东西
 {"问题": "", "答案": "", "答案来源": ""}
+如果不需要使用ai，可以直接使用  /题 [问题]
 注意，如果答案来源是AI且答对了的，代表题库中并不存在这个题目
 麻烦各位调用下面的指令来追加这个题目
 
