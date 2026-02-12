@@ -122,7 +122,7 @@ class MyPlugin(Star):
         yield event.plain_result(res.text)
 
     ### 题库
-    @filter.command("题库")
+    # @filter.command("题库")
     async def ask_question_library(self, event: AstrMessageEvent):
         question = event.get_message_str().removeprefix("题库").strip()
         if len(question) == 0:
