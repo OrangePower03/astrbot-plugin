@@ -184,7 +184,7 @@ class MyPlugin(Star):
         super().__init__(context)
         self.base_url = "http://backend:8080"
         self.events: dict[str, AstrMessageEvent] = {}
-        self.ddd_group_id = "317832838"
+        self.ddd_group_id = "881311374"
         self.interval = 60
         self.task_status = True
         self.scheduler_task = asyncio.create_task(self.task())
